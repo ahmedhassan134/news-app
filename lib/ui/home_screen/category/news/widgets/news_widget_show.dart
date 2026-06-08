@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:news_app/core/data_source/remote_data/Dio/dio_service.dart';
 import 'package:news_app/core/data_source/remote_data/api_services.dart';
 import 'package:news_app/core/models/source_model.dart';
 import 'package:news_app/core/utils/app_assets.dart';
@@ -25,7 +26,7 @@ class _NewsWidgetShowState extends State<NewsWidgetShow> {
   Widget build(BuildContext context) {
     SizeConfig.init(context);
     return FutureBuilder(
-      future: ApiServices().getNewsById(sourceId: widget.source.id),
+      future: DioService().getNewsById(sourceId: widget.source.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator(color: Colors.grey));
@@ -38,7 +39,7 @@ class _NewsWidgetShowState extends State<NewsWidgetShow> {
                 Text("something is error "),
                 ElevatedButton(
                   onPressed: () {
-                    ApiServices().getNewsById(sourceId: widget.source.id);
+                    DioService().getNewsById(sourceId: widget.source.id);
                     setState(() {});
                   },
                   child: Text("Try Again"),
@@ -54,7 +55,7 @@ class _NewsWidgetShowState extends State<NewsWidgetShow> {
                 Text("something is error "),
                 ElevatedButton(
                   onPressed: () {
-                    ApiServices().getNewsById(sourceId: widget.source.id);
+                    DioService().getNewsById(sourceId: widget.source.id);
                     setState(() {});
                   },
                   child: Text("Try Again"),

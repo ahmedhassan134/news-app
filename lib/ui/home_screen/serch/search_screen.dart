@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/core/data_source/remote_data/Dio/dio_service.dart';
 import 'package:news_app/core/data_source/remote_data/api_services.dart';
 import 'package:news_app/core/utils/size_config.dart';
 import 'package:news_app/ui/home_screen/serch/widgets/text_field.dart';
@@ -32,7 +33,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                 setState(() {
 
-                  futureNews=ApiServices().getNewsBySearch(searchNews: text);
+                  futureNews=DioService().getNewsBySearch(searchNews: text);
                 });
               } ,
             ),
@@ -51,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           Text("something is error "),
                           ElevatedButton(
                             onPressed: () {
-                              ApiServices().getNewsBySearch(
+                              DioService().getNewsBySearch(
 
                               );
                               setState(() {});
@@ -68,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           Text("something is error "),
                           ElevatedButton(
                             onPressed: () {
-                              ApiServices().getNewsBySearch(
+                              DioService().getNewsBySearch(
 
                               );
                               setState(() {});

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/business/cubit/source_cubit.dart';
+import 'package:news_app/core/data_source/remote_data/Dio/dio_service.dart';
 import 'package:news_app/core/data_source/remote_data/api_services.dart';
 import 'package:news_app/core/models/every_thing.dart';
 
@@ -18,9 +21,19 @@ class General extends StatefulWidget {
 }
 
 class _GeneralState extends State<General> {
+
+  late String category;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    category = ModalRoute.of(context)?.settings.arguments as String;
+    BlocProvider.of<SourceCubit>(context).getNews(category: category);
+  }
   @override
   Widget build(BuildContext context) {
-    var category=ModalRoute.of(context)?.settings.arguments as String;
+
+
     return Scaffold(
 
       // backgroundColor: Colors.red,
@@ -31,50 +44,75 @@ class _GeneralState extends State<General> {
           
         },
       ),
-      body: FutureBuilder<SourcesResponse>(
-        future: ApiServices().get(category: category),
-        builder: (context, snapshot) {
-          if(snapshot.connectionState==ConnectionState.waiting){
-            return Center(child: CircularProgressIndicator(color: Colors.grey,),);
-          }
-          if (snapshot.hasError){
-            return Column(
-              children: [
-                Text("something is error "),
-                ElevatedButton(onPressed: (){
-                  ApiServices().get(category: category);
-                  setState(() {
+      body: BlocBuilder<SourceCubit,SourceState>(
+          builder:(context, state) {
+            if(state is SourceLoadingState){
+              return Center(child: CircularProgressIndicator(color: Colors.grey,),);
+            } else if(state is SourceSuccessState){
+              return ShowItem(
 
-                  });
-                }, child: Text("Try Again"))
-              ],
-            );
-          }
-          if(snapshot.data?.status=="error"){
-            return Column(
-              children: [
-                Text("something is error "),
-                ElevatedButton(onPressed: (){
-                  ApiServices().get(category: category);
-                  setState(() {
+                        sourcList:state.sourceList ,
+                      );
 
-                  });
+            }else if(state is SourceFailureState){
+              return  Column(
+                        children: [
+                          Text("something is error "),
+                          ElevatedButton(onPressed: (){
+                            ApiServices.get(category: category);
+                            setState(() {
 
-                }, child: Text("Try Again"))
-              ],
-            );
+                            });
+                          }, child: Text("Try Again"))
+                        ],);
+            }
+            return Container();
 
-          }
-          else{
-            List<Source> sourceList=snapshot.data!.sources;
-            return   ShowItem(
-
-              sourcList:sourceList ,
-            );
-          }
-        },
-
-      ),
+          }, ),
+      // body: FutureBuilder<SourcesResponse>(
+      //   future: DioService().getAllCategory(category: category),
+      //   builder: (context, snapshot) {
+      //     if(snapshot.connectionState==ConnectionState.waiting){
+      //       return Center(child: CircularProgressIndicator(color: Colors.grey,),);
+      //     }
+      //     if (snapshot.hasError){
+      //       return Column(
+      //         children: [
+      //           Text("something is error "),
+      //           ElevatedButton(onPressed: (){
+      //             ApiServices.get(category: category);
+      //             setState(() {
+      //
+      //             });
+      //           }, child: Text("Try Again"))
+      //         ],
+      //       );
+      //     }
+      //     if(snapshot.data?.status=="error"){
+      //       return Column(
+      //         children: [
+      //           Text("something is error "),
+      //           ElevatedButton(onPressed: (){
+      //             ApiServices.get(category: category);
+      //             setState(() {
+      //
+      //             });
+      //
+      //           }, child: Text("Try Again"))
+      //         ],
+      //       );
+      //
+      //     }
+      //     else{
+      //       List<Source> sourceList=snapshot.data!.sources;
+      //       return   ShowItem(
+      //
+      //         sourcList:sourceList ,
+      //       );
+      //     }
+      //   },
+      //
+      // ),
     );
   }
 
